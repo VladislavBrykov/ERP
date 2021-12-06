@@ -1,0 +1,11 @@
+{
+  "type": "postgres",
+  "url": "postgres://username:password@localhost:5434/erp",
+  "entities": ["apps/api/src/entities/*{.ts,.js}"],
+  "migrationsTableName": "custom_migration_table",
+  "migrations": ["apps/api/src/migrations/*{.ts,.js}"],
+  "cli": {
+    "migrationsDir": "apps/api/src/migrations",
+    "entitiesDir": "apps/api/src/entities"
+  }
+}

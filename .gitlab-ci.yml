@@ -1,0 +1,62 @@
+image: node:14-alpine
+
+stages:
+  - npm
+  - test
+  - build
+  - deploy
+
+npm:
+  stage: npm
+  only:
+    - merge_requests
+    - master
+  script:
+    - npm config set registry ${CI_NPM_REGISTRY}
+    - npm install
+  cache:
+    paths:
+      - node_modules/
+  artifacts:
+    expire_in: never
+    when: on_success
+    paths:
+      - node_modules/
+
+test:
+  stage: test
+  only:
+    - merge_requests
+  dependencies:
+    - npm
+  script:
+    - npm run ci
+
+build:
+  stage: build
+  only:
+    - master
+  before_script:
+    - apk add zip
+  dependencies:
+    - npm
+  script:
+    - npm run build
+    - zip -r app.zip ./dist package.json package-lock.json
+  artifacts:
+    paths:
+      - app.zip
+
+deploy:
+  stage: deploy
+  only:
+    - master
+  before_script:
+    - apk add openssh-client
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh
+    - chmod 400 ~/.ssh
+  script:
+    - scp -o StrictHostKeyChecking=no app.zip ec2-user@3.65.45.222:app
+    - ssh -o StrictHostKeyChecking=no ec2-user@3.65.45.222 "cd app; unzip -o app.zip; npm install --only=prod;cd ..; pm2 restart ecosystem.config.js"
