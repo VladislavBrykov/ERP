@@ -1,7 +1,7 @@
 import { z } from 'zod';
-import {ErrorMessages} from "../../../constants/error.messages";
+import { ErrorMessages } from '@erp/constants';
 
-export const SignInValidation = z.object({
+export const SignInRequestBodyValidation = z.object({
   email: z.string().email({ message: ErrorMessages.INVALID_EMAIL }),
   password: z.string().min(10),
 });

@@ -1,5 +1,9 @@
 image: node:14-alpine
 
+services:
+  - postgres:12-alpine
+  - redis:latest
+
 stages:
   - npm
   - test

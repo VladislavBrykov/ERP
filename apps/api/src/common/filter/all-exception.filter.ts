@@ -4,22 +4,25 @@ import {
   Catch,
   ExceptionFilter,
   ForbiddenException,
+  HttpException,
+  HttpStatus,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { Response } from 'express';
+import { ErrorCodesEnum } from '@erp/constants';
+import { ZodError } from 'zod';
 
 import { ErrorCode } from '../error/error.codes';
-import { ErrorCodesEnum } from '../../constants/error.codes.enum';
 
 @Catch()
 export default class AllExceptionsFilter implements ExceptionFilter {
-  catch(exception: any, host: ArgumentsHost) {
+  catch(exception: ZodError | HttpException | ErrorCode, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
 
-    if (exception.issues) {
-      return response.json(exception.issues);
+    if (exception instanceof ZodError && exception.issues) {
+      return response.status(HttpStatus.UNAUTHORIZED).json(exception.issues);
     }
 
     if (exception instanceof ErrorCode) {

@@ -3,6 +3,7 @@
  * This is only a minimal backend to get started.
  */
 
+import dotenv from 'dotenv';
 import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import session from 'express-session';
@@ -15,9 +16,14 @@ import passport from 'passport';
 
 import { AppModule } from './app/app.module';
 import AllExceptionsFilter from './common/filter/all-exception.filter';
+import { EnvValidation } from '@erp/validation';
+export const env = EnvValidation.parse(process.env);
+
+dotenv.config();
+
 const client = createClient({
-  host: process.env.REDIS_HOST,
-  port: Number(process.env.REDIS_PORT),
+  host: env.REDIS_HOST,
+  port: env.REDIS_PORT,
 });
 
 async function bootstrap() {
@@ -30,11 +36,11 @@ async function bootstrap() {
 
   app.use(
     session({
-      secret: process.env.SECRET_KEY_SESSION,
+      secret: env.SECRET_KEY_SESSION,
       cookie: {
-        maxAge: Number(process.env.SESSION_EXPIRE_TIME), // 1 hour
+        maxAge: env.SESSION_EXPIRE_TIME, // 1 hour
       },
-      store: new RedisStore({ client, ttl: process.env.REDIS_EXPIRE_TIME }),
+      store: new RedisStore({ client, ttl: env.REDIS_EXPIRE_TIME }),
       saveUninitialized: true,
       resave: false,
     })
@@ -47,7 +53,7 @@ async function bootstrap() {
   const globalPrefix = 'api';
   app.setGlobalPrefix(globalPrefix);
 
-  const port = process.env.PORT || 3333;
+  const port = env.PORT || 3333;
 
   const config = new DocumentBuilder()
     .setTitle('erp')

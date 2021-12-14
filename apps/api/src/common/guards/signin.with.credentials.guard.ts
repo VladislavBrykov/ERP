@@ -1,16 +1,20 @@
 import { ExecutionContext, Injectable } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { SignInValidation } from '../../app/auth/validations/sign-in.validation';
+import { ErrorCode } from '../error/error.codes';
+import { ErrorCodesEnum } from '@erp/constants';
 
 @Injectable()
 export class SignInWithCredentialsGuard extends AuthGuard('local') {
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    SignInValidation.parse(context.switchToHttp().getRequest().body)
-    await super.canActivate(context);
+    try {
+      await super.canActivate(context);
 
-    const request = context.switchToHttp().getRequest();
-    await super.logIn(request);
+      const request = context.switchToHttp().getRequest();
+      await super.logIn(request);
 
-    return true;
+      return true;
+    } catch (e) {
+      throw new ErrorCode(ErrorCodesEnum.INVALID_CREDENTIALS);
+    }
   }
 }

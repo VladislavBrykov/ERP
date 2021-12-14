@@ -1,8 +1,9 @@
 import { join } from 'path';
-import {MiddlewareConsumer, Module, NestModule, RequestMethod} from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { TerminusModule } from '@nestjs/terminus';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { EnvValidation } from '@erp/validation';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -10,7 +11,11 @@ import { HealthController } from './health/health.controller';
 import { User } from '../entities/User';
 import { User1634125869393 } from '../migrations/1634125869393-User';
 import { AuthModule } from './auth/auth.module';
-import LoggingMiddleware from "../middlewares/logger.middleware";
+import { Role } from '../entities/Role';
+import { Roles1639468185366 } from '../migrations/1639468185366-Roles';
+import {UpdateUserAndMakeRelation1639472167667} from "../migrations/1639472167667-UpdateUserAndMakeRelation";
+
+const env = EnvValidation.parse(process.env);
 
 @Module({
   imports: [
@@ -20,21 +25,19 @@ import LoggingMiddleware from "../middlewares/logger.middleware";
     TerminusModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
-      url: process.env.DATABASE_URL,
-      entities: [User],
+      url: env.DATABASE_URL,
+      entities: [Role, User],
       synchronize: false,
       migrationsRun: true,
-      migrations: [User1634125869393],
+      migrations: [
+        Roles1639468185366,
+        User1634125869393,
+        UpdateUserAndMakeRelation1639472167667,
+      ],
     }),
     AuthModule,
   ],
   controllers: [AppController, HealthController],
   providers: [AppService],
 })
-export class AppModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(LoggingMiddleware)
-      .forRoutes({ path: '/auth/sign-in', method: RequestMethod.POST });
-  }
-}
+export class AppModule {}

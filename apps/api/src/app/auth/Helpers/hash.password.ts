@@ -1,9 +1,14 @@
-import * as bcrypt from 'bcrypt';
+import bcrypt from 'bcrypt';
+import { EnvValidation } from '@erp/validation';
 
-export function hash(password): string {
-  return bcrypt.hashSync(password, process.env.BCRYPT_HASH);
+export async function hash(password: string): Promise<string> {
+  const env = EnvValidation.parse(process.env);
+  return bcrypt.hash(password, env.BCRYPT_HASH);
 }
 
-export function isCorrectPassword(password, hash) {
-  return bcrypt.compareSync(password, hash);
+export async function isCorrectPassword(
+  password: string,
+  hash: string
+): Promise<boolean> {
+  return bcrypt.compare(password, hash);
 }

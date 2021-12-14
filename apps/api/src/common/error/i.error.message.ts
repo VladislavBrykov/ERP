@@ -1,6 +1,6 @@
 import { HttpStatus } from '@nestjs/common';
+import { ErrorCodesEnum } from '@erp/constants';
 
-import { ErrorCodesEnum } from '../../constants/error.codes.enum';
 
 export interface IErrorMessage {
   type: ErrorCodesEnum;

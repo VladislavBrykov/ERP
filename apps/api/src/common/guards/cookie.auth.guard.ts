@@ -1,6 +1,6 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { ErrorCode } from '../error/error.codes';
-import { ErrorCodesEnum } from '../../constants/error.codes.enum';
+import { ErrorCodesEnum } from '@erp/constants';
 
 @Injectable()
 export class CookieAuthenticationGuard implements CanActivate {

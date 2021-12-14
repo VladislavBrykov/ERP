@@ -13,10 +13,14 @@
     "lib": ["es2017", "dom"],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
+    "strict": true,
     "baseUrl": ".",
     "esModuleInterop": true,
     "paths": {
-      "@erp/api-contracts": ["libs/api-contracts/src/index.ts"]
+      "@erp/api-contracts": ["libs/api-contracts/src/index.ts"],
+      "@erp/constants": ["libs/constants/src/index.ts"],
+      "@erp/validation": ["libs/validation/src/index.ts"],
+      "@erp/validations": ["libs/validations/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]
